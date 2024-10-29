@@ -1,14 +1,18 @@
 ---
-title: "STAT 331 Portfolio"
-author: "Your Name Goes Here"
+title: "STAT 531 Portfolio"
+author: "Tillman Erb"
+date: "10/29/2024"
 format: 
   html: 
     self-contained: true
+    toc: true
 layout: margin-left
 editor: visual
 execute: 
   eval: false
   echo: true
+code-fold: true
+theme: darkly
 ---
 
 [**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
@@ -23,7 +27,8 @@ execute:
 
 ```{r}
 #| label: wd-1-csv
-
+#Lab 3 Question 2
+evals <- read_csv(file = here::here("data","teacher_evals.csv"))
 ```
 
 -   `xlsx`
@@ -44,7 +49,21 @@ execute:
 
 ```{r}
 #| label: wd-2
+# Lab 4 Question 5
+income_cc <- ca_childcare |>
+  filter(study_year == 2018) |>
+  group_by(region) |>
+  summarize(median_weekly_cc_price = median(mc_infant)) |>
+  arrange(median_weekly_cc_price) |>
+  inner_join(select(median_inc, -`2008`)) |> #Selecting all columns except "2008"
+  rename(median_household_income =`2018`)
 
+#Lab 3 Question 2
+evals_cleaned <- evals |>
+  select(course_id:SET_score_avg, 
+         percent_failed_cur, 
+         academic_degree:gender)
+#Selected columns using a variety of syntaxes
 ```
 
 **WD-3: I can filter rows from a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
@@ -53,14 +72,20 @@ execute:
 
 ```{r}
 #| label: wd-3-numeric
-
+#Lab 5 "Checking interviews for these two IDs"
+witness_test <- interview |>
+  filter(person_id %in% c(16371, 14887))
 ```
 
 -   character -- specifically a string (example must use functions from **stringr**)
 
 ```{r}
 #| label: wd-3-string
-
+#Lab 5 "Fitering Membership check in times"
+membership_ids <- get_fit_now_check_in |>
+  mutate(check_in_date = ymd(check_in_date)) |>
+  filter(check_in_date == ymd(20180109),
+         str_detect(membership_id, "^48Z")) #Checking for a string that begins with "^48z"
 ```
 
 -   factor
@@ -75,6 +100,12 @@ execute:
 ```{r}
 #| label: wd-3-date
 
+#Lab 5 Fitering Membership check in times
+membership_ids <- get_fit_now_check_in |>
+  mutate(check_in_date = ymd(check_in_date)) |>
+  filter(check_in_date == ymd(20180109), #Filtering for 1/9/2018, converting from int to datetime
+         str_detect(membership_id, "^48Z"))
+
 ```
 
 **WD-4: I can modify existing variables and create new variables in a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
@@ -83,6 +114,15 @@ execute:
 
 ```{r}
 #| label: wd-4-numeric
+#Challenge 3 Question 1
+teacher_evals_compare <- evals |>
+  filter(question_no == 903) |>
+  mutate(SET_level = if_else(SET_score_avg >=4,
+                             'excellent',
+                             'standard'),
+         sen_level = if_else(seniority <= 4,
+                             'junior',
+                             'senior'))
 
 ```
 
@@ -97,6 +137,20 @@ execute:
 
 ```{r}
 #| label: wd-4-factor
+#Lab 4 Question 6
+
+plot_data <- ca_childcare |>
+  select(county_name, region, study_year, mc_infant, mc_toddler, mc_preschool) |>
+  pivot_longer(cols = c(mc_infant, mc_toddler, mc_preschool),
+               names_to = "cc_type",
+               values_to = "wkly_med_price"
+              ) |>
+  mutate(cc_type = fct_recode(cc_type,
+      "Infant" = "mc_infant",
+      "Toddler" = "mc_toddler",
+      "Preschool" = "mc_preschool"))
+#Recoding factors in a given column
+
 
 ```
 
@@ -104,7 +158,9 @@ execute:
 
 ```{r}
 #| label: wd-4-date
-
+#Lab 5 Fitering Membership check in times
+membership_ids <- get_fit_now_check_in |>
+  mutate(check_in_date = ymd(check_in_date)) #Mutating integer to date format using ymd() function 
 ```
 
 **WD-5: I can use mutating joins to combine multiple dataframes.**
@@ -127,7 +183,10 @@ execute:
 
 ```{r}
 #| label: wd-5-inner
-
+#Lab 4 Question 2
+ca_childcare <- counties |>
+  filter(state_abbreviation == 'CA') |>
+  inner_join(childcare_costs)
 ```
 
 -   `full_join()`
@@ -159,14 +218,27 @@ execute:
 
 ```{r}
 #| label: wd-7-long
+#Lab 4 Question 6
 
+plot_data <- ca_childcare |>
+  select(county_name, region, study_year, mc_infant, mc_toddler, mc_preschool) |>
+  pivot_longer(cols = c(mc_infant, mc_toddler, mc_preschool),
+               names_to = "cc_type",
+               values_to = "wkly_med_price"
+              )
 ```
 
 -   `pivot_wider()`
 
 ```{r}
 #| label: wd-7-wide
+#Lab 4 Question 4
 
+median_inc <- ca_childcare |>
+  filter(study_year %in% c(2008, 2018)) |>
+  group_by(region, study_year) |>
+  summarize(median_household_income = median(mhi_2018)) |>
+  pivot_wider(names_from = study_year, values_from = median_household_income) #pivoting wider here
 ```
 
 ## Reproducibility
@@ -222,28 +294,83 @@ I've done this in the following provided assignments:
 
 ```{r}
 #| label: dvs-1-num
-
+#Lab 4 Question 7
+ca_childcare_2018 |>
+  ggplot(mapping = aes(y = mc_infant,
+                       x = mhi_2018)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  labs(title = "Median Household Income ($) versus Median Weekly Infant
+                Center-Based Childcare Price ($)",
+       x = "2018 CA Regional Median Household Income ($)",
+       y = NULL,
+       subtitle = "2018 CA Regional Median Childcare Price ($)") +
+  scale_x_continuous(labels = label_dollar()) + #https://scales.r-lib.org/reference/label_dollar.html
+  scale_y_continuous(labels = label_dollar())
 ```
 
 -   at least one numeric variable and one categorical variable
 
 ```{r}
 #| label: dvs-2-num-cat
+#Lab 2 Question 10
 
+ggplot(data = surveys,
+       mapping = aes(x = species,
+                     y = weight)) +
+geom_boxplot(outliers = FALSE) +
+geom_jitter(color = 'steelblue', 
+            'alpha' = 0.3
+            ) +
+labs(x = "Species of Animal",
+     y = "Weight (g)"
+) +
+#https://stackoverflow.com/questions/1330989/rotating-and-spacing-axis-labels-in-ggplot2
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 -   at least two categorical variables
 
 ```{r}
 #| label: dvs-2-cat
+#Challenge 2 'Spicy' Level
 
+ggplot(data = surveys,
+       mapping = aes(x = species,
+                     y = weight)) +
+geom_jitter(mapping = aes(color = genus), 
+            'alpha' = 0.3
+            ) +
+geom_boxplot(outliers = FALSE) +
+labs(x = "Species",
+     y = "Weight (g)"
+) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+scale_colour_viridis_d()
 ```
 
 -   dates (timeseries plot)
 
 ```{r}
 #| label: dvs-2-date
+#Lab 4 Question 6
 
+ggplot(data = plot_data, mapping = aes(x = study_year, 
+                                       y = wkly_med_price, 
+                                       color = fct_reorder2(.f = region,
+                                                            .x = study_year,
+                                                            .y = wkly_med_price)
+                                       )
+       ) +
+  geom_point() +
+  geom_smooth(method = 'loess') +
+  facet_grid(~ factor(cc_type, levels = c("Infant", "Toddler", "Preschool"))) +
+  labs(x = "Study Year",
+       y = NULL,
+       title = "Weekly Median Price for Center-Based Childcare ($)",
+       color = "California Region") + 
+  scale_y_continuous(limits = c(0,500)) + #http://www.sthda.com/english/wiki/ggplot2-axis-ticks-a-guide-to-customize-tick-marks-and-labels
+  scale_x_continuous(breaks = seq.int(2008, 2018, by = 2))
 ```
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
