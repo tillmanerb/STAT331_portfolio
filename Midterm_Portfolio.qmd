@@ -379,13 +379,57 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-2-1
+#Lab 2 Question 2
+#Put y axis label as a subheader so people don't tilt their heads
 
+ggplot(data = teacher_evals_compare, mapping = aes(x = sen_level,
+                                                   fill = SET_level)) +
+  geom_bar() +
+  scale_fill_manual(values = c("#0072B2","#E69F00")) + #https://ggplot2.tidyverse.org/reference/scale_manual.html
+  labs(x = "Seniority of Instructor",
+     y = "",
+     title = "Number of Sections",
+     fill = 'SET Level' #https://stackoverflow.com/questions/14622421/how-to-change-legend-title-in-ggplot,
+     )
 ```
 
 -   I can modify the text in my plot to be more readable
 
 ```{r}
 #| label: dvs-2-2
+#Challenge 2 Question 3
+#Placed and changed size of genus labels to ensure readibility. See large annotate block towards end of snippet
+
+ggplot(data = surveys,
+       mapping = aes(y = species,
+                     x = weight)) +
+geom_jitter(mapping = aes(color = genus), 
+            'alpha' = 0.3
+            ) +
+geom_boxplot(outliers = FALSE) +
+labs(y = "Weight (g)",
+     x = "Species"
+) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+scale_colour_viridis_d() +
+  labs(x = "Weight (g)",
+       y = "",
+       subtitle = "Species",
+       title = "Rodent Weight by Species") +
+annotate("text", y = 2, x = 250, size = 3, label = "Chaetodipus") +
+annotate("text", y = 13, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 1, x = 25, size = 3, label = "Neotoma") +
+annotate("text", y = 14, x = 250, size = 3, label = "Onychomys") +
+annotate("text", y = 4, x = 250, size = 3, label = "Perognathus") +
+annotate("text", y = 3, x = 250, size = 3, label = "Peromyscus") +
+annotate("text", y = 9, x = 250, size = 3, label = "Reithrodontomys") +
+annotate("text", y = 6, x = 250, size = 3, label = "Sigmodon") + 
+annotate("text", y = 5, x = 250, size = 3, label = "Reithrodontomys") +
+annotate("text", y = 12, x = 250, size = 3, label = "Chaetodipus") +
+annotate("text", y = 11, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 10, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 7, x = 250, size = 3, label = "Perognathus") +
+annotate("text", y = 8, x = 250, size = 3, label = "Peromyscus")
 
 ```
 
@@ -393,7 +437,27 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-2-3
+#Lab 4 Question 6
+#Used fct_reorder2 to reorder legend based off plot values
 
+plot_data <- ca_childcare |>
+  select(county_name, region, study_year, mc_infant, mc_toddler, mc_preschool) |>
+  pivot_longer(cols = c(mc_infant, mc_toddler, mc_preschool),
+               names_to = "cc_type",
+               values_to = "wkly_med_price"
+              ) |>
+  mutate(cc_type = fct_recode(cc_type,
+      "Infant" = "mc_infant",
+      "Toddler" = "mc_toddler",
+      "Preschool" = "mc_preschool"))
+
+ggplot(data = plot_data, mapping = aes(x = study_year, 
+                                       y = wkly_med_price, 
+                                       color = fct_reorder2(.f = region,
+                                                            .x = study_year,
+                                                            .y = wkly_med_price)
+                                       )
+       )
 ```
 
 **DVS-3: I show creativity in my visualizations**
@@ -402,13 +466,60 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-3-1
+#Challenge 2 Question 3
+#Used scale_colour_viridis_d()
 
+ggplot(data = surveys,
+       mapping = aes(y = species,
+                     x = weight)) +
+geom_jitter(mapping = aes(color = genus), 
+            'alpha' = 0.3
+            ) +
+geom_boxplot(outliers = FALSE) +
+labs(y = "Weight (g)",
+     x = "Species"
+) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+scale_colour_viridis_d()
 ```
 
 -   I can use annotations
 
 ```{r}
 #| label: dvs-3-2
+#Challenge 2 Question 3
+#See large annotate block towards end of snippet
+
+ggplot(data = surveys,
+       mapping = aes(y = species,
+                     x = weight)) +
+geom_jitter(mapping = aes(color = genus), 
+            'alpha' = 0.3
+            ) +
+geom_boxplot(outliers = FALSE) +
+labs(y = "Weight (g)",
+     x = "Species"
+) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+scale_colour_viridis_d() +
+  labs(x = "Weight (g)",
+       y = "",
+       subtitle = "Species",
+       title = "Rodent Weight by Species") +
+annotate("text", y = 2, x = 250, size = 3, label = "Chaetodipus") +
+annotate("text", y = 13, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 1, x = 25, size = 3, label = "Neotoma") +
+annotate("text", y = 14, x = 250, size = 3, label = "Onychomys") +
+annotate("text", y = 4, x = 250, size = 3, label = "Perognathus") +
+annotate("text", y = 3, x = 250, size = 3, label = "Peromyscus") +
+annotate("text", y = 9, x = 250, size = 3, label = "Reithrodontomys") +
+annotate("text", y = 6, x = 250, size = 3, label = "Sigmodon") + 
+annotate("text", y = 5, x = 250, size = 3, label = "Reithrodontomys") +
+annotate("text", y = 12, x = 250, size = 3, label = "Chaetodipus") +
+annotate("text", y = 11, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 10, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 7, x = 250, size = 3, label = "Perognathus") +
+annotate("text", y = 8, x = 250, size = 3, label = "Peromyscus")
 
 ```
 
@@ -416,7 +527,38 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-3-3
+#Based annotation position off of boxplot position to not obscure boxplots. Used custom color scale for distinuishment between species
 
+ggplot(data = surveys,
+       mapping = aes(y = species,
+                     x = weight)) +
+geom_jitter(mapping = aes(color = genus), 
+            'alpha' = 0.3
+            ) +
+geom_boxplot(outliers = FALSE) +
+labs(y = "Weight (g)",
+     x = "Species"
+) +
+theme(axis.text.x = element_text(angle = 45, hjust = 1), legend.position = "none") +
+scale_colour_viridis_d() +
+  labs(x = "Weight (g)",
+       y = "",
+       subtitle = "Species",
+       title = "Rodent Weight by Species") +
+annotate("text", y = 2, x = 250, size = 3, label = "Chaetodipus") +
+annotate("text", y = 13, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 1, x = 25, size = 3, label = "Neotoma") +
+annotate("text", y = 14, x = 250, size = 3, label = "Onychomys") +
+annotate("text", y = 4, x = 250, size = 3, label = "Perognathus") +
+annotate("text", y = 3, x = 250, size = 3, label = "Peromyscus") +
+annotate("text", y = 9, x = 250, size = 3, label = "Reithrodontomys") +
+annotate("text", y = 6, x = 250, size = 3, label = "Sigmodon") + 
+annotate("text", y = 5, x = 250, size = 3, label = "Reithrodontomys") +
+annotate("text", y = 12, x = 250, size = 3, label = "Chaetodipus") +
+annotate("text", y = 11, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 10, x = 250, size = 3, label = "Dipodomys") +
+annotate("text", y = 7, x = 250, size = 3, label = "Perognathus") +
+annotate("text", y = 8, x = 250, size = 3, label = "Peromyscus")
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
@@ -455,17 +597,31 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 -   Example 1
 
+Output: ![](images/clipboard-2400987150.png)
+
 ```{r}
 #| label: dvs-6-1
+#Lab 4 Question 5
+income_cc <- ca_childcare |>
+  filter(study_year == 2018) |>
+  group_by(region) |>
+  summarize(median_weekly_cc_price = median(mc_infant)) |>
+  arrange(median_weekly_cc_price) |>
+  inner_join(select(median_inc, -`2008`)) |>
+  rename(median_household_income =`2018`)
 
+income_cc
 ```
 
+-   
 -   Example 2
 
 ```{r}
 #| label: dvs-6-2
 
 ```
+
+DONE BELOW THIS DELETE BEFORE SUBMITTING
 
 **DVS-7: I show creativity in my tables.**
 
@@ -481,6 +637,7 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 ```{r}
 #| label: dvs-7-2
 
+
 ```
 
 ## Program Efficiency
@@ -491,7 +648,23 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 ```{r}
 #| label: pe-1-one-call
+#Lab 4 Question 3
+#Used mutate str_remove and fct_collapse inputs
 
+ca_childcare <- ca_childcare |> 
+  mutate(county_name = str_remove(county_name, " County"),
+        region = fct_collapse(county_name,
+        "Superior California" = c("Butte", "El Dorado", "Colusa", "Glenn", "Lassen", "Modoc", "Nevada", "Placer", "Plumas", "Sacramento", "Shasta", "Sierra", "Siskiyou", "Sutter", "Tehama", "Yolo", "Yuba"),
+        "North Coast" = c("Del Norte", "Humboldt", "Lake", "Mendocino", "Napa", "Sonoma", "Trinity"),
+        "San Francisco Bay Area" = c("Alameda", "Contra Costa", "Marin", "San Francisco", "San Mateo", "Santa Clara", "Solano"),
+        "Northern San Joaquin Valley" = c("Alpine", "Amador", "Calaveras", "Madera", "Mariposa", "Merced", "Mono", "San Joaquin", "Stanislaus", "Tuolumne"),
+        "Central Coast" = c("Monterey", "San Benito", "San Luis Obispo", "Santa Barbara", "Santa Cruz", "Ventura"),
+        "Southern San Joaquin Valley" = c("Fresno", "Inyo", "Kern", "Kings", "Tulare"),
+        "Inland Empire" = c("Riverside", "San Bernardino"),
+        "Los Angeles County" = "Los Angeles",
+        "Orange County" = "Orange",
+        "San Diego County" = c("Imperial", "San Diego")
+        ), .before = state_abbreviation)
 ```
 
 -   `across()`
@@ -553,6 +726,10 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 ```{r}
 #| label: pe-4-1
+#Lab 3 Question 7
+#Modified orignal submission to include keyword arguments (such as .cols, .fns) for increased readibility
+evals_cleaned |>
+  filter(if_any(.cols = everything(), .fns = ~ is.na(.x)))
 
 ```
 
@@ -560,7 +737,15 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 ```{r}
 #| label: pe-4-2
+#Lab 4 Question 7
+#Modified question to make the data wrangling pipeline connect directly to ggplot instead of storing a variable
 
+ca_childcare |>
+  filter(study_year == 2018) |>
+  ggplot(mapping = aes(y = mc_infant,
+                       x = mhi_2018)) +
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
 ## Data Simulation & Statisical Models
@@ -585,15 +770,35 @@ ggplot(data = plot_data, mapping = aes(x = study_year,
 
 -   Example 1
 
+Analysis of output:
+
+The estimated regression line is: $y = 0.0033x + 66.81$
+
+In this equation, y represents the county-level median weekly infant center-based childcare price, whereas x represents the median household income for that county. The positive relationship shows that as MHI increases, so do childcare prices. Because of the low p-value, we know that this is a relationship with statistical significance.
+
 ```{r}
 #| label: dsm-2-1
+# Lab 4 Question 8
+
+reg_mod1 <- lm(ca_childcare_2018$mc_infant ~ ca_childcare_2018$mhi_2018)
+summary(reg_mod1)
 
 ```
 
 -   Example 2
 
+Analysis of output:
+
+Based off a p value of approximately zero from the above one-way anova test, we reject the null hypothesis and conclude that at least one rodent species has a different mean weight.
+
 ```{r}
 #| label: dsm-2-2
+# Lab 2 Question 17
+
+species_mod <- aov(data = surveys,
+                   weight ~ species)
+
+summary(species_mod)
 
 ```
 
