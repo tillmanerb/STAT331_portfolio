@@ -9,3 +9,15 @@ editor: visual
 -   Focus specifically on data science concepts and the skills we employed in learning them, not a laundry list of topics that you learned (those are in the syllabus, so I know them already).
 
 -   Focus on a small number of specific areas of growth for you that happened in STAT 331. Identify at least one artifact in your portfolio that illustrates each area of growth and explain how this artifact shows growth in the way you are describing.
+
+The three areas of growth in which I believe I've shown significant progress are in tidiness, efficiency, and data visualization. Overall, my approach to coding and data science prior to this course had some focus on tidiness and efficiency, yet these elements were rarely prioritized and therefore my code was often difficult to revise or understand later. I've since significantly improved in my implementation of tidiness and efficiency.
+
+**Tidiness:** The use of named arguments, newlines, snake case, and indentation made my code far easier to understand at a glance. For example, PE-3-across uses all of these elements, and is therefore easy to understand and lacks clutter.
+
+**Efficiency:** My coding efficiency significantly improved over this course. At the beginning, I was declaring multiple (unnecessary) variables and calling functions such as mutate multiple times. I feel confident that I can now accomplish most tasks (that only need a single pipeline) in a single pipeline. Furthermore, learning about map functions gave me the skills to eliminate for loops or other hard-coded iteration methods. For example, in DVS-4-across, I was able to get the number of missing observations per column as well as the total number of rows with missing observations with a filter, mutate, and summarize (with across()), which was far more efficient than the first time I wrote code for that specific output.
+
+**Data Visualization:** My attention to detail and creativity within data visualization has been a key area of growth. I've learned to think of data visualization from the perspective of the viewer, who likely knows little about the dataset and does not want to tilt their head 90 degrees. An example of a plot I created that showcases my improvement in data visualization was in lab 7:
+
+![](images/clipboard-2031567837.png){width="328"}
+
+This plot contained descriptive facet, legend, and axis labels. A user looking for missing observations would find it easy to determine the missing observations by year, trip, and section by this one plot alone.
