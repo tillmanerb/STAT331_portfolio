@@ -6,16 +6,22 @@ editor: visual
 
 **Answer each of the following questions with *one sentence* including a brief explanation.**
 
-1. Finish the sentence with another student’s name: "If [Name of Student] doesn’t earn an A, then nobody should, because..." Explain your choice and your reasoning.
+1.  Finish the sentence with another student’s name: "If \[Name of Student\] doesn’t earn an A, then nobody should, because..." Explain your choice and your reasoning.
 
+    Eva Moylan because she was great to work with, wrote good code and consistently followed the coder / developer roles assigned for class.
 
-2. What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
+2.  What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
 
+    Writing functions for dataframes was a difficult topic for me because the syntax was a bit confusing (when to use embracing, when not to) and I don't think I fully grasped the idea of data masking versus tidy selection.
 
-3. What was the easiest part of the class for you? Explain why.
+3.  What was the easiest part of the class for you? Explain why.
 
+    The Lubridate and Stringr week was the easiest part of the class for me because I had some previous experience working with regular expressions, and bugs were typically quite easy to fix when compared to a more programatic bug in say a custom function.
 
-4. What part of the class surprised or interested you the most? Explain why.
+4.  What part of the class surprised or interested you the most? Explain why.
 
+    I really enjoyed learning about ggplot and the different methods of creating graphs within R. When compared to Python, the language I'm most familiar with, ggplot visualizations were far easier to create and customize (and looked better).
 
-5. Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+5.  Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+
+    I would recommend taking notes during class. This is something I did not do for the majority of the quarter and I think it would have helped me to have a list of available functions and code snippets with explanations.

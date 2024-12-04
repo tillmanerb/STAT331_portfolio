@@ -386,15 +386,15 @@ rescale_01 <- function(vec, na.rm = TRUE) {
 ```{r}
 #| label: r-3-example
 # Lab 4 Question 5
-#Joined a wrangled ca_childcare with a previous dataframe, median_inc, resulting in a dataframe with the median household income and median weekly center-based childcare price. If the data were to change for this year, the user would be able to assess, based off the table, if the region with the lowest income also has the lowest childcare prices.
+#Used slice_max to ensure highest mean_score will always be returned
+#Modified code such that everything is performed in a single pipeline
 
-income_cc <- ca_childcare |>
-  filter(study_year == 2018) |>
-  group_by(region) |>
-  summarize(median_weekly_cc_price = median(mc_infant)) |>
-  arrange(median_weekly_cc_price) |>
-  inner_join(select(median_inc, -`2008`)) |>
-  rename(median_household_income =`2018`)
+evals_cleaned |>
+  filter(question_no == 901) |>
+  group_by(teacher_id) |>
+  summarize(mean_score = mean(SET_score_avg)) |>
+  slice_max(order_by = mean_score,
+            n = 1)
 ```
 
 -   Example of function stops
