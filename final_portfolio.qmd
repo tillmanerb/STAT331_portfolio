@@ -28,22 +28,6 @@ theme: darkly
 
     -   Anti Join
 
--   Function formatting
-
--   Function stops
-
--   across()
-
--   DVS-7
-
--   PE-1 (most)
-
--   PE-2
-
--   PE-3
-
--   DSSM-1
-
 ## Working with Data
 
 **WD-1: I can import data from a *variety* of formats (e.g., csv, xlsx, txt, etc.).**
@@ -310,6 +294,10 @@ I've done this in the following provided assignments:
 
 Lab 5 (see .html file in portfolio GitHub repository)
 
+Challenge 2 (see .html file in portfolio GitHub repository)
+
+MatchingScores (see .html in GitHub repository: this is an analysis I did in R for a small portion of my thesis in which I leveraged skills from this class)
+
 **R-2: I can write well documented and tidy code.**
 
 -   Example of **ggplot2** plotting
@@ -365,7 +353,30 @@ plot_data <- ca_childcare |>
 
 ```{r}
 #| label: r-2-3
+# Lab 7 Question 4
+# Added additional comments for improved documentation
 
+rescale_01 <- function(vec, na.rm = TRUE) {
+  #Stop function if the vector does not contain numeric values, or if the vector length is greater than 1
+  if (!is.numeric(vec[1])){
+    stop("Error: vector provided is not numeric")
+  } else if (length(vec) <= 1) {
+    stop("Error: vector length must be greater than 1")
+  }
+  
+  #Using range to get the range of the function
+  vec_range <- range(vec, na.rm = TRUE, finite = TRUE)
+  
+  #Normalizing values from 0 to 1
+  vec <- (vec - vec_range[1]) / 
+           (vec_range[2] - vec_range[1])
+  
+  #Removing NA values if the user specifies
+  if (na.rm){
+    vec <- vec[!is.na(vec)] #https://www.geeksforgeeks.org/remove-na-values-from-vector-in-r/
+  }
+  return(vec)
+}
 ```
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
@@ -390,7 +401,15 @@ income_cc <- ca_childcare |>
 
 ```{r}
 #| label: r-3-function-stops
+# Challenge 7 Question 2
 
+NA_outliers <- function(vec, min_value, max_value) {
+  stopifnot("Vector must be numeric and min_value must be less than max_value" = is.numeric(vec[1]) & max_value >= min_value)
+  vec <- case_when(
+    (vec >= min_value & vec <= max_value) ~ vec,
+                   .default = NA)
+  return(vec)
+}
 ```
 
 ## Data Visualization & Summarization
@@ -785,6 +804,7 @@ results |>
 ```{r}
 #| label: dvs-7-1
 # Lab 9 question 2
+ #Created a heatmap to color code table such that the frequency of the number of babies returned correctly is represented by the shade
 
 results |>
   enframe(name = "simulation_number", 
@@ -809,9 +829,28 @@ results |>
 
 ```{r}
 #| label: dvs-7-2
+#Lab 8 Question 2
+#Reduced number of decimals, created a striped table for easier readibility
 
+evals <- evals |>
+  rename(gender = sex) |>
+  map_at(.at = c('teacher_id',
+                'weekday',
+                'academic_degree',
+                'seniority',
+                'gender'),
+         .f = factor) |>
+  bind_cols()
 
+evals |>
+  slice(1:10) |> #https://www.projectpro.io/recipes/get-top-n-rows-of-dataframe-by-date-r
+   knitr::kable(caption = "Data Types of Columns in Surveys Dataset",
+                digits = 2,
+                align = 'l') |>
+   kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+![](images/clipboard-474261060.png)
 
 ## Program Efficiency
 
@@ -871,7 +910,16 @@ evals |>
 
 ```{r}
 #| label: pe-1-map-1
-
+#Lab 8 question 1
+#Rewrote map_chr to have more modern syntax
+surveys |>
+  map_chr(~ class(.x)) |>
+  bind_cols(name = names(surveys)) |>
+  rename('Type' = 1) |> #https://sparkbyexamples.com/r-programming/rename-column-by-index-position-in-r/#:~:text=Rename%20Column%20By%20Index%20by,R%2C%20indexing%20starts%20with%201.
+  pivot_wider(values_from = Type, names_from = name) |> #https://stackoverflow.com/questions/36396911/r-move-index-column-to-first-column
+  knitr::kable(align = 'l',
+               caption = "Data Types of Columns in Surveys Dataset") |>
+  kable_styling()
 ```
 
 **PE-2: I can write functions to reduce repetition in my code.**
@@ -880,6 +928,15 @@ evals |>
 
 ```{r}
 #| label: pe-2-1
+# Challenge 7 Question 2
+
+NA_outliers <- function(vec, min_value, max_value) {
+  stopifnot("Vector must be numeric and min_value must be less than max_value" = is.numeric(vec[1]) & max_value >= min_value)
+  vec <- case_when(
+    (vec >= min_value & vec <= max_value) ~ vec,
+                   .default = NA)
+  return(vec)
+}
 
 ```
 
@@ -887,7 +944,15 @@ evals |>
 
 ```{r}
 #| label: pe-2-2
+#Challenge 7 Question 3
+#Did not have any data frame functions so I modified my vecotr function to take a data frame input.
 
+fish_condition <- function(df, length_col, weight_col) {
+  return(
+  df |>
+    mutate(condition = {{ weight_col}} / ({{length_col}} ^ 3) /  100)
+  )
+}
 ```
 
 **PE-3:I can use iteration to reduce repetition in my code.**
@@ -896,21 +961,56 @@ evals |>
 
 ```{r}
 #| label: pe-3-across
+# Lab 8 Question 3
+# Used across for a single fct_recode call
 
+evals |>
+  distinct(teacher_id, 
+           academic_degree,
+           seniority,
+           gender) |>
+  mutate(seniority = factor(
+    if_else(
+      as.numeric(seniority) <= 4, 
+            'Junior (4 years or less)', 
+            'Senior (more than 4 years)')),
+    across(.cols = c(gender, academic_degree),
+           .fns = ~ fct_recode(.f = .x,
+                        'Male' = 'male',
+                        'Female' = 'female',
+                        'Doctorate' = 'dr',
+                        'Professor' = 'prof',
+                        'Masters' = 'ma',
+                        'No Degree' = 'no_dgr'))) #....
 ```
 
 -   `map()` function with **one** input (e.g., `map()`, `map_chr()`, `map_dbl()`, etc.)
 
 ```{r}
 #| label: pe-3-map-1
+#Lab 8 question 1
 
+surveys |>
+  map_chr(~ class(.x)) |>
+  bind_cols(name = names(surveys)) |>
+  rename('Type' = 1) |> #https://sparkbyexamples.com/r-programming/rename-column-by-index-position-in-r/#:~:text=Rename%20Column%20By%20Index%20by,R%2C%20indexing%20starts%20with%201.
+  pivot_wider(values_from = Type, names_from = name) |> #https://stackoverflow.com/questions/36396911/r-move-index-column-to-first-column
+  knitr::kable(align = 'l',
+               caption = "Data Types of Columns in Surveys Dataset") |>
+  kable_styling()
 ```
 
 -   `map()` function with **more than one** input (e.g., `map_2()` or `pmap()`)
 
 ```{r}
 #| label: pe-3-map-2
+# Lab 9 Problem 6
 
+all_simulations <- grid |> 
+  mutate(simulated_means = pmap(.l = list(n, df), 
+                                .f = simulate_means)
+         ) |> 
+  unnest(simulated_means)
 ```
 
 **PE-4: I can use modern tools when carrying out my analysis.**
@@ -949,6 +1049,25 @@ ca_childcare |>
 
 ```{r}
 #| label: dsm-1-1
+#Lab 9 Question 1
+#Simulated from numbers 1 through 4 (discrete uniform distribution)
+
+randomBabies <- function(nBabies){
+  baby_data <- tibble(parent = 1:nBabies,
+                      returned = sample(1:nBabies,
+                                        size = nBabies,
+                                        replace = TRUE))
+  baby_data |>
+    filter(returned == 1) |>
+    nrow()
+  
+}
+
+results <- map_int(.x = 1:10000,
+                   .f = ~ randomBabies(4)
+                   )
+
+glimpse(results)
 
 ```
 
@@ -956,7 +1075,15 @@ ca_childcare |>
 
 ```{r}
 #| label: dsm-1-2
+# Lab 9 Question 4
 
+simulate_means <- function(n, df){
+  return(
+    map_dbl(.x = 1:n, 
+          .f = ~rchisq(n = 100, df = df) |> mean()
+          )
+  )
+}
 ```
 
 **DSSM-2: I can conduct common statistical analyses in R.**
