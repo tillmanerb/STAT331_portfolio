@@ -22,11 +22,11 @@ theme: darkly
 
 **To Do List: Complete Before Final Portfolio**
 
--   Filter a Dataframe using a factor (forcats)
+-   Filter for a date
 
--   Joins
+-   *`Filter for a factor`*
 
-    -   Anti Join
+-   Modify existing variables for a date
 
 ## Working with Data
 
@@ -112,7 +112,20 @@ membership_ids <- get_fit_now_check_in |>
 
 ```{r}
 #| label: wd-3-factor
+# Lab 4 Question 6
+#Modified original code to filter factor (could not find example elsewhere)
 
+plot_data <- ca_childcare |>
+  select(county_name, region, study_year, mc_infant, mc_toddler, mc_preschool) |>
+  pivot_longer(cols = c(mc_infant, mc_toddler, mc_preschool),
+               names_to = "cc_type",
+               values_to = "wkly_med_price"
+              ) |>
+  mutate(cc_type = fct_recode(cc_type,
+      "Infant" = "mc_infant",
+      "Toddler" = "mc_toddler",
+      "Preschool" = "mc_preschool")) |>
+  filter(cc_type == "Infant")
 ```
 
 -   date (example must use functions from **lubridate**)
@@ -125,7 +138,6 @@ membership_ids <- get_fit_now_check_in |>
   mutate(check_in_date = ymd(check_in_date)) |>
   filter(check_in_date == ymd(20180109), #Filtering for 1/9/2018, converting from int to datetime
          str_detect(membership_id, "^48Z"))
-
 ```
 
 **WD-4: I can modify existing variables and create new variables in a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
@@ -213,11 +225,16 @@ membership_ids <- get_fit_now_check_in |>
 ```{r}
 #| label: wd-5-left
 # Lab 5 'Getting ids of red-haired suspects above'
-mfh_ids <- murder_for_hire_lic_ids |>
-  left_join(person, by = c("id" = "license_id")) |>
-  select(id = id.y)
+#Modified the original code  to combine two chunks into a single pipeline, used a join_by instead of using 'by' which was less efficient and tidy.
 
-mfh_ids
+mfh_ids <- drivers_license |>
+  filter(height %in% c(65,66,67),
+         gender == 'female',
+         hair_color == 'red',
+         car_make == 'Tesla',
+         str_detect(car_model, " S$")
+  ) |>
+  left_join(person, join_by(id == license_id))
 ```
 
 -   `right_join()`
@@ -225,10 +242,14 @@ mfh_ids
 ```{r}
 #| label: wd-5-right
 #Lab 5 'Getting the assassin's employer's name'
+#Modified the original code to use the 'join_by' argument instead of using 'by'
+#See 'id' tibble (an output of a previous cell) in screenshot below
+
 id_1 <- person |>
-  right_join(id, by = c("id" = "person_id"))
+  right_join(id, join_by(id == person_id))
 ```
 
+-   ![](images/clipboard-3310247582.png){width="186"}
 -   `inner_join()`
 
 ```{r}
@@ -254,6 +275,16 @@ witness_test <- interview |>
 
 ```{r}
 #| label: wd-6-anti
+# Lab 3 Question 12
+# Modified original code to work with an anti join
+
+evals_cleaned_q12 <- evals_cleaned |>
+  filter(sex == 'female') |>
+  anti_join(
+    filter(evals_cleaned, academic_degree %in% c('no_dgr', 'ma'))
+  ) |>
+  group_by(teacher_id) |>
+  summarise(avg_pct_stu = mean(resp_share))
 
 ```
 
@@ -404,7 +435,8 @@ evals_cleaned |>
 # Challenge 7 Question 2
 
 NA_outliers <- function(vec, min_value, max_value) {
-  stopifnot("Vector must be numeric and min_value must be less than max_value" = is.numeric(vec[1]) & max_value >= min_value)
+  stopifnot("Vector must be numeric and min_value must be less than max_value" 
+            = is.numeric(vec[1]) & max_value >= min_value)
   vec <- case_when(
     (vec >= min_value & vec <= max_value) ~ vec,
                    .default = NA)
