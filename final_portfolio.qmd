@@ -20,14 +20,6 @@ theme: darkly
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from Lab or Challenge assignments where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
-**To Do List: Complete Before Final Portfolio**
-
--   Filter for a date
-
--   *`Filter for a factor`*
-
--   Modify existing variables for a date
-
 ## Working with Data
 
 **WD-1: I can import data from a *variety* of formats (e.g., csv, xlsx, txt, etc.).**
